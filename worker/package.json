@@ -1,12 +1,1 @@
-{
-  "name": "samsons-timeclock-api",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy"
-  },
-  "devDependencies": {
-    "wrangler": "^4.135.0"
-  }
-}
+{"name":"samsons-automation-worker","private":true,"type":"module","devDependencies":{"wrangler":"^4.0.0"},"scripts":{"dev":"wrangler dev","deploy":"wrangler deploy"}}

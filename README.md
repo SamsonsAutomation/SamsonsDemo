@@ -1,202 +1,82 @@
-# Samson's Automation Demo v6 — secure employee clock + GPS
+# Samson's Automation Unified v7
 
-This project contains two layers:
+This project combines all three branches in one GitHub Pages repository:
 
-1. **The existing public sales demo** (`index.html`) for leads, timekeeping, and payroll-ready totals.
-2. **A real shared employee clock starter** (`admin.html` + `employee.html`) backed by a Cloudflare Worker + D1 database.
+1. `/` — public Samson's Automation marketing site + EmailJS inquiry form.
+2. `/demo/` — safe public demo using browser-local fake data only.
+3. `/app/` — secure multi-tenant company admin + employee portal backed by Cloudflare Worker + D1.
 
-The secure clock is intentionally **not implemented with localStorage**. A phone and a manager's PC need shared server-side data, and employee credentials must not live in public GitHub JavaScript.
+## Security / tenant isolation
+Protected API endpoints never accept an `organization_id` from the browser. The Worker authenticates the session, derives the organization from the signed-in user, and every protected resource query includes that organization ID. Resource lookups use both the resource ID **and** the authenticated organization ID. This is the primary control preventing one company from retrieving another company's leads, employees, clock entries, payroll summaries, or settings.
 
-## What the secure clock now supports
+Employee sessions can access only `/api/me`, their own clock/PIN endpoints, and their own recent entries. Admin endpoints require `role=admin`.
 
-- Employee login from a phone using company link + username + 5-digit PIN.
-- Every clock-in and clock-out requires the employee to be signed in **and** grant browser GPS access.
-- Manager can turn the location boundary on/off.
-- Even with the boundary off, GPS is still required and recorded at the clock event.
-- Manager can set the approved latitude/longitude and allowed radius in meters.
-- Employee is rejected if the GPS boundary is enabled and the clock event is outside the radius.
-- Boss/admin can add, edit, remove/restore employees, edit usernames, and set/reset employee PINs.
-- Initial username is generated from a shortened name (for example `Chris Walker` -> `cwalker`; collisions get a number).
-- Initial PIN is a random 5-digit number and is displayed **once** after creation/reset.
-- PINs/passwords are never stored in plaintext. The Worker stores a salted PBKDF2-SHA256 hash using a server-only pepper.
-- Five failed logins temporarily lock the account for 10 minutes.
-- Employees can change their own 5-digit PIN after signing in.
-- Removing an employee disables their login but preserves historical time entries.
-- GPS is collected only on Clock In / Clock Out, not continuously.
+Credentials are PBKDF2-SHA256 hashed with a per-user random salt and server-only `PIN_PEPPER`. The Worker uses 100,000 PBKDF2 iterations because Cloudflare Workers Web Crypto rejects higher PBKDF2 iteration counts in this runtime. Employee PINs are never stored or returned after initial creation/reset.
 
-## Important security behavior
+## Upgrading your existing v6 live database
+From the `worker` folder, use the same D1 database you already deployed.
 
-Because PINs are hashed, the boss cannot later "view" an employee's existing PIN. That would require storing a recoverable/plaintext secret, which this project deliberately does not do. The boss can see/edit the username and can **reset or set a new PIN**.
+1. Copy your existing working `wrangler.toml` into this v7 `worker/` folder, or update the example with the same D1 database ID.
+2. Run the migration **once**:
 
-A 5-digit PIN has limited entropy. This starter mitigates that with server-side hashing, a secret pepper, session authentication, and temporary lockout after failed attempts. For a larger deployment, consider 6+ digits, MFA, or device verification.
-
-## Public demo test
-
-The original demo still runs by opening `index.html` or using Live Server. The secure clock pages will show a setup warning until you configure the backend.
-
----
-
-# Deploy the secure backend (Cloudflare Worker + D1)
-
-Cloudflare's D1 database is bound to the Worker and queried server-side. Your GitHub Pages site only receives the public Worker URL; it never receives the database or server secrets.
-
-## 1. Install Node.js
-
-You already need Node only for deploying the backend. From the `worker` folder:
-
-```bash
+```powershell
 npm install
+npx wrangler d1 execute samsons-timeclock --remote --file=./migration-v7.sql
 ```
 
-## 2. Sign in to Cloudflare Wrangler
+3. Deploy the new Worker:
 
-```bash
-npx wrangler login
-```
-
-## 3. Create the D1 database
-
-```bash
-npx wrangler d1 create samsons-timeclock
-```
-
-Wrangler prints a `database_id`.
-
-Copy `worker/wrangler.toml.example` to:
-
-```text
-worker/wrangler.toml
-```
-
-Put the database ID into the D1 section.
-
-## 4. Add two server-only secrets
-
-Run these from the `worker` folder:
-
-```bash
-npx wrangler secret put BOOTSTRAP_KEY
-npx wrangler secret put PIN_PEPPER
-```
-
-For each prompt, paste a long random value (30+ random characters is good). **Never place either secret in GitHub or `config.js`.**
-
-`BOOTSTRAP_KEY` authorizes creation of a company/boss account. `PIN_PEPPER` is mixed into every credential hash and stays only on the server.
-
-## 5. Create the database tables
-
-```bash
-npx wrangler d1 execute samsons-timeclock --remote --file=./schema.sql
-```
-
-## 6. Deploy the Worker
-
-```bash
+```powershell
 npx wrangler deploy
 ```
 
-Cloudflare returns a URL similar to:
+4. Confirm:
 
-```text
-https://samsons-timeclock-api.YOUR-SUBDOMAIN.workers.dev
+`https://samsons-timeclock-api.samsons-worker.workers.dev/api/health`
+
+should return a JSON response with `version: "v7-unified"`.
+
+Your existing `BOOTSTRAP_KEY` and `PIN_PEPPER` secrets remain in Cloudflare and do not need to be recreated when redeploying the same Worker.
+
+## Fresh database instead
+For a new D1 database, run `schema.sql` instead of the migration:
+
+```powershell
+npx wrangler d1 execute samsons-timeclock --remote --file=./schema.sql
 ```
 
-## 7. Put only the public Worker URL in `config.js`
+## GitHub Pages
+Upload the **contents** of this folder to the root of your `SamsonsAutomation` repository. GitHub Pages should remain `main / (root)`.
 
-Edit:
+URLs will be approximately:
 
-```js
-window.SAMSONS_CLOCK_CONFIG = {
-  API_BASE_URL: "https://samsons-timeclock-api.YOUR-SUBDOMAIN.workers.dev",
-  COMPANY_SLUG: "samsons-demo"
-};
-```
+- Main site: `https://samsonsautomation.github.io/SamsonsAutomation/`
+- Demo: `https://samsonsautomation.github.io/SamsonsAutomation/demo/`
+- Company admin: `https://samsonsautomation.github.io/SamsonsAutomation/app/admin.html`
+- Employee clock: `https://samsonsautomation.github.io/SamsonsAutomation/app/employee.html`
+- Internal onboarding: `https://samsonsautomation.github.io/SamsonsAutomation/app/setup.html`
 
-The Worker URL is public by design. The `BOOTSTRAP_KEY`, `PIN_PEPPER`, and database binding are the secrets and remain server-side.
+`app/config.js` is already pointed at your current public Worker URL. A Worker URL is not a secret.
 
-## 8. Upload the updated site files to GitHub Pages
+## Onboarding a new business
+Use the protected setup page with your server-side `BOOTSTRAP_KEY` to create each business. Give each one a human-readable unique code such as `klein-electric` or `smith-landscaping`.
 
-Copy the contents of this project into your existing demo repository, commit, and push.
+The bootstrap call creates a new organization and its first admin. From that point the company's manager creates employees and receives each generated username/PIN once.
 
-## 9. Create the first company/boss login
+Do **not** make a separate Worker or database for each business. The organization/tenant ID separates them inside one service. Indexes on organization + date/status keep queries narrow as the number of companies grows.
 
-Open:
+## Performance design
+- Admin tabs fetch data only when opened instead of downloading every company dataset at login.
+- Lead results are capped and cursor-paginated.
+- Time-entry and payroll queries require a date range and reject ranges over 45 days.
+- SQL indexes begin with `organization_id` for lead, time, and audit access.
+- The browser never downloads records belonging to other businesses.
+- Overview uses database aggregates and small previews rather than loading full tables.
 
-```text
-https://YOUR-GITHUB-PAGES-URL/setup.html
-```
+This is appropriate for an early production pilot. As volume grows, add scheduled cleanup of expired sessions, Cloudflare rate limiting/WAF rules, automated backups/export, and stronger observability.
 
-Enter the `BOOTSTRAP_KEY` you created in step 4, then choose:
+## Payroll note
+Payroll Ready calculates recorded hours, overtime using the configured threshold, hourly rate, and estimated gross wages. It deliberately does **not** perform tax withholding, filings, deductions, benefits, or direct deposit. Export the CSV to the client's actual payroll provider.
 
-- company name
-- company code (`samsons-demo`, `acme-electric`, etc.)
-- boss/admin name
-- admin username
-- strong admin password (10+ characters)
-
-The setup key is not saved by the page.
-
-## 10. Add employees
-
-Sign into:
-
-```text
-admin.html?company=YOUR-COMPANY-CODE
-```
-
-Press **Add employee**. The backend creates a shortened username plus a random 5-digit PIN. Copy the one-time credentials before closing the window.
-
-## 11. Set the worksite GPS rule
-
-In the manager console:
-
-1. Press **Use my current location** while standing at the desired site, or enter coordinates manually.
-2. Set a radius such as 100–200 meters.
-3. Turn on **Require employees to be inside this location boundary**.
-4. Save.
-
-If the boundary is off, employees still have to grant GPS and their clock event location is still recorded; the API simply does not reject them for being outside a radius.
-
-## 12. Test from a phone
-
-Use the employee portal link shown in the manager console. It looks like:
-
-```text
-https://YOUR-GITHUB-PAGES-URL/employee.html?company=YOUR-COMPANY-CODE
-```
-
-On the phone:
-
-1. Sign in with the generated employee username and PIN.
-2. Press **Clock In**.
-3. The phone/browser will request Location permission.
-4. Allow it.
-5. If the geofence is enabled, the server checks the GPS coordinates against the configured radius.
-6. Clock out the same way.
-
-GitHub Pages uses HTTPS, which is required by modern browsers for geolocation.
-
-## CORS / custom domain
-
-`worker/wrangler.toml` includes:
-
-```toml
-ALLOWED_ORIGINS = "https://samsonsautomation.github.io,http://localhost:5500,http://127.0.0.1:5500"
-```
-
-If you later move the demo to a custom domain, add its **origin** (for example `https://demo.samsonsautomation.com`) to that comma-separated value and deploy the Worker again.
-
-## Privacy note
-
-Employee location is sensitive. The current design collects a location only when an employee intentionally presses Clock In or Clock Out; it does not continuously track them. A production customer should clearly disclose this policy to employees and decide an appropriate retention policy for location records.
-
-## What still belongs in a later production phase
-
-- Boss/admin password change/recovery flow
-- Multiple manager accounts and permissions
-- Audit log for manager edits
-- Pay-period configuration and approved timesheet locking
-- Manual clock corrections with a reason + audit history
-- Map preview of clock events
-- Custom-domain same-site session cookies instead of browser session storage
-- Stronger PIN/MFA policy for larger deployments
+## EmailJS
+The public root site retains the existing EmailJS IDs and customer auto-reply workflow. No Gmail password is stored in this repository.

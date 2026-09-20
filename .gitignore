@@ -1,5 +1,5 @@
 node_modules/
+worker/wrangler.toml
 .dev.vars
 .env
 .env.*
-wrangler.toml
