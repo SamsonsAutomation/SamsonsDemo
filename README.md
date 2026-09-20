@@ -1,4 +1,4 @@
-# Samson's Automation Unified v7
+# Samson's Automation Unified v8
 
 This project combines all three branches in one GitHub Pages repository:
 
@@ -13,30 +13,30 @@ Employee sessions can access only `/api/me`, their own clock/PIN endpoints, and 
 
 Credentials are PBKDF2-SHA256 hashed with a per-user random salt and server-only `PIN_PEPPER`. The Worker uses 100,000 PBKDF2 iterations because Cloudflare Workers Web Crypto rejects higher PBKDF2 iteration counts in this runtime. Employee PINs are never stored or returned after initial creation/reset.
 
-## Upgrading your existing v6 live database
-From the `worker` folder, use the same D1 database you already deployed.
+## Updating from the working Unified v7 build
+If Unified v7 is already working with your live D1 database, **no database migration is required for v8**. Manager clock-in/out uses the existing time-entry and audit tables.
 
-1. Copy your existing working `wrangler.toml` into this v7 `worker/` folder, or update the example with the same D1 database ID.
-2. Run the migration **once**:
+From the `worker` folder:
+
+```powershell
+npm install
+npx wrangler deploy
+```
+
+Then replace/push the GitHub Pages frontend files. Confirm the backend at:
+
+`https://samsons-timeclock-api.samsons-worker.workers.dev/api/health`
+
+The response should include `version: "v8-manager-clock"`. Your existing `BOOTSTRAP_KEY`, `PIN_PEPPER`, D1 database, businesses, employees, leads, and time records remain intact.
+
+### If you are upgrading directly from v6
+Run the existing v7 migration once before deploying v8:
 
 ```powershell
 npm install
 npx wrangler d1 execute samsons-timeclock --remote --file=./migration-v7.sql
-```
-
-3. Deploy the new Worker:
-
-```powershell
 npx wrangler deploy
 ```
-
-4. Confirm:
-
-`https://samsons-timeclock-api.samsons-worker.workers.dev/api/health`
-
-should return a JSON response with `version: "v7-unified"`.
-
-Your existing `BOOTSTRAP_KEY` and `PIN_PEPPER` secrets remain in Cloudflare and do not need to be recreated when redeploying the same Worker.
 
 ## Fresh database instead
 For a new D1 database, run `schema.sql` instead of the migration:
@@ -74,6 +74,14 @@ Do **not** make a separate Worker or database for each business. The organizatio
 - Overview uses database aggregates and small previews rather than loading full tables.
 
 This is appropriate for an early production pilot. As volume grows, add scheduled cleanup of expired sessions, Cloudflare rate limiting/WAF rules, automated backups/export, and stronger observability.
+
+
+## Manager clock overrides
+Admins can now clock an individual employee in or out from either **Employees** or **Time Clock**. The clock button stays in the same position and changes label based on the employee's current state.
+
+Manager actions bypass the employee GPS requirement because they are explicit administrative overrides. They are written to `time_entry_audit` with the authenticated admin user ID and surfaced in the Time Clock table as **Manager clock-in** and/or **Manager clock-out**. Payroll reads the resulting real time entry normally.
+
+The endpoint still enforces tenant isolation: the employee lookup, open time-entry lookup, update, and audit row are all scoped to the organization derived from the signed-in admin session. An admin cannot clock an employee belonging to another company by changing an ID in the browser.
 
 ## Payroll note
 Payroll Ready calculates recorded hours, overtime using the configured threshold, hourly rate, and estimated gross wages. It deliberately does **not** perform tax withholding, filings, deductions, benefits, or direct deposit. Export the CSV to the client's actual payroll provider.
