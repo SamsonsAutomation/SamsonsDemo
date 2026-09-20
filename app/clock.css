@@ -19,3 +19,51 @@
 .punch-card{text-align:center;padding:30px 24px}.clock-state-icon{width:70px;height:70px;border-radius:50%;display:grid;place-items:center;margin:0 auto 14px;background:#eef5fd;color:#2978d4;font-size:38px;font-weight:800}.punch-card.clocked .clock-state-icon{background:#e9f8f1;color:#168052}.punch-card h2{font-size:32px}.big-clock-button{min-height:54px;font-size:17px;margin-top:10px}.gps-explainer{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;text-align:left;background:#f6f9fc;border-radius:12px;padding:12px 14px;margin-top:16px}.gps-explainer strong{font-size:12px}.gps-explainer span{font-size:12px;color:var(--muted);text-align:right;line-height:1.4}.entry-list{display:grid;gap:10px;margin-top:14px}.entry-row{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;border:1px solid #e8eef5;border-radius:12px;padding:12px}.entry-row strong{display:block;font-size:13px}.entry-row span{display:block;color:var(--muted);font-size:11px;margin-top:4px}.entry-duration{font-weight:800;color:var(--ink);font-size:13px;white-space:nowrap}.setup-shell{padding-top:0}
 @media(max-width:900px){.admin-grid{grid-template-columns:1fr}.secure-employee-grid{grid-template-columns:1fr}.three-col-form{grid-template-columns:1fr 1fr}.secure-actions{grid-template-columns:1fr 1fr 1fr}}
 @media(max-width:620px){.clock-shell{width:min(100% - 20px,1180px)}.clock-header{align-items:flex-start;padding:16px 0;min-height:auto}.clock-header-actions{flex-direction:column;align-items:stretch}.clock-header-actions .ghost-button{text-align:center}.admin-hero{flex-direction:column}.admin-hero-meta{justify-content:flex-start}.three-col-form{grid-template-columns:1fr}.secure-actions{grid-template-columns:1fr}.credential-meta{grid-template-columns:1fr}.button-row>*{flex:1}.copy-field{grid-template-columns:1fr}.employee-app-head{align-items:center}.clock-card{padding:19px}.gps-explainer{flex-direction:column}.gps-explainer span{text-align:left}.brand strong{font-size:14px}}
+
+
+/* v9 employee portal polish */
+.employee-page{overflow-x:hidden}
+.employee-topbar{background:rgba(255,255,255,.94);border-bottom:1px solid rgba(205,218,232,.8);backdrop-filter:blur(14px);position:sticky;top:0;z-index:20}
+.employee-topbar-inner{width:min(1040px,calc(100% - 32px));min-height:78px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:18px}
+.employee-brand{display:flex;align-items:center;gap:12px;color:var(--ink);text-decoration:none;min-width:0}
+.employee-brand .brand-mark{width:44px;height:44px;flex:0 0 44px;border-radius:13px;color:#08203d}
+.employee-brand strong{display:block;font-size:15px;line-height:1.2}
+.employee-brand span{display:block;color:var(--muted);font-size:11px;margin-top:4px}
+.employee-public-nav{display:flex;align-items:center;gap:6px}
+.employee-public-nav a{text-decoration:none;color:#506177;font-size:12px;font-weight:800;padding:9px 11px;border-radius:10px;transition:.18s ease}
+.employee-public-nav a:hover{color:var(--blue);background:#eef6ff}
+.employee-shell{width:min(960px,calc(100% - 32px));margin:0 auto;padding:34px 0 56px}
+.employee-login-card{display:grid;grid-template-columns:minmax(0,.9fr) minmax(360px,1.1fr);background:white;border:1px solid var(--line);border-radius:26px;box-shadow:0 24px 70px rgba(17,36,63,.12);overflow:hidden;margin:24px auto 0;min-height:510px}
+.employee-login-intro{background:linear-gradient(145deg,#07172e 0%,#0c315c 67%,#1765aa 100%);color:white;padding:48px 42px;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:center}
+.employee-login-intro:after{content:"S";position:absolute;right:-28px;bottom:-84px;font-weight:800;font-size:270px;line-height:1;color:rgba(255,255,255,.035);pointer-events:none}
+.login-intro-mark{width:62px;height:62px;border-radius:18px;display:grid;place-items:center;background:linear-gradient(145deg,#5aabff,#2580e8);box-shadow:0 14px 35px rgba(37,128,232,.28);font-size:34px;font-weight:800;margin-bottom:22px;position:relative;z-index:1}
+.light-kicker{color:#77b9ff}
+.employee-login-intro h1{font-size:clamp(31px,4vw,46px);line-height:1.05;margin:10px 0 16px;letter-spacing:-.035em;position:relative;z-index:1}
+.employee-login-intro>p{color:#c9d9e9;line-height:1.65;margin:0;max-width:430px;position:relative;z-index:1}
+.login-feature-list{display:grid;gap:14px;margin-top:30px;position:relative;z-index:1}
+.login-feature-list>div{display:flex;align-items:flex-start;gap:11px}
+.login-feature-list>div>span{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:rgba(83,170,255,.15);border:1px solid rgba(117,190,255,.28);color:#8bc8ff;font-size:12px;font-weight:800;flex:0 0 24px}
+.login-feature-list strong,.login-feature-list small{display:block}.login-feature-list strong{font-size:12px}.login-feature-list small{color:#aebfd2;font-size:11px;line-height:1.45;margin-top:3px}
+.employee-login-form-panel{padding:48px 46px;display:flex;flex-direction:column;justify-content:center}
+.employee-login-form-panel h2{font-size:30px;margin:7px 0 8px;letter-spacing:-.025em}.employee-login-form-panel>p{margin:0;color:var(--muted);line-height:1.55}
+.employee-login-form-panel .clock-form{margin-top:24px}
+.employee-login-form-panel .clock-form input{min-height:48px;background:#fbfdff}
+.employee-login-form-panel .big-clock-button{min-height:54px}
+.employee-app-head{margin-top:2px;background:linear-gradient(120deg,#0b2344,#174f84);color:white;border-radius:22px;padding:22px 24px;box-shadow:var(--shadow)}
+.employee-app-head .kicker{color:#6eb5ff}.employee-app-head p{color:#bdd0e3}.employee-app-head .ghost-button{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);color:white}
+.punch-card{max-width:760px;margin:18px auto;padding:36px 34px}.punch-card h2{font-size:36px}.punch-card>p{max-width:520px;margin-left:auto;margin-right:auto}
+.punch-card .big-clock-button{width:min(420px,100%);min-height:62px;font-size:19px;border-radius:15px}
+.clock-helper-actions{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:13px}
+.gps-test-button{border:1px solid #cfe0f4;background:#f3f8fe;color:#2868a8;border-radius:10px;padding:9px 12px;font:inherit;font-size:12px;font-weight:800;cursor:pointer}
+.gps-test-button:disabled{opacity:.5;cursor:wait}.gps-diagnostic{color:var(--muted);font-size:11px;line-height:1.4}.gps-diagnostic.good{color:#16794a}.gps-diagnostic.bad{color:#a53a3a}
+.employee-detail-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}.employee-detail-grid .clock-card{margin-bottom:0}
+.entry-list{max-height:440px;overflow:auto;padding-right:2px}
+@media(max-width:820px){
+  .employee-login-card{grid-template-columns:1fr;min-height:0}.employee-login-intro{padding:34px 30px}.employee-login-intro h1{font-size:34px}.login-feature-list{grid-template-columns:repeat(3,1fr);gap:10px}.login-feature-list>div{display:block}.login-feature-list>div>span{margin-bottom:7px}.employee-login-form-panel{padding:34px 30px}.employee-detail-grid{grid-template-columns:1fr}
+}
+@media(max-width:620px){
+  .employee-topbar{position:relative}.employee-topbar-inner{width:min(100% - 20px,1040px);min-height:auto;padding:13px 0;align-items:flex-start;gap:12px}.employee-brand .brand-mark{width:40px;height:40px;flex-basis:40px}.employee-brand strong{font-size:13px}.employee-brand span{font-size:10px}.employee-public-nav{gap:2px}.employee-public-nav a{font-size:10px;padding:7px 7px}
+  .employee-shell{width:min(100% - 20px,960px);padding:18px 0 calc(34px + env(safe-area-inset-bottom))}.employee-login-card{margin-top:4px;border-radius:20px}.employee-login-intro{padding:28px 23px}.login-intro-mark{width:48px;height:48px;border-radius:14px;font-size:26px;margin-bottom:16px}.employee-login-intro h1{font-size:29px;margin-top:8px}.employee-login-intro>p{font-size:13px}.login-feature-list{display:none}.employee-login-form-panel{padding:27px 23px}.employee-login-form-panel h2{font-size:26px}.employee-login-form-panel .clock-form{margin-top:18px}.employee-login-form-panel .clock-form input{font-size:16px}
+  .employee-app-head{padding:18px;border-radius:18px;align-items:center}.employee-app-head h1{font-size:24px}.punch-card{padding:27px 18px;margin:13px 0}.punch-card h2{font-size:31px}.clock-state-icon{width:62px;height:62px;font-size:32px}.gps-explainer{margin-top:14px}.clock-helper-actions{flex-direction:column;gap:7px}.gps-test-button{width:100%;min-height:42px}.employee-detail-grid{gap:13px}.clock-card{border-radius:18px}
+}
+@media(max-width:390px){.employee-public-nav a:nth-child(2){display:none}.employee-brand span{display:none}.employee-login-intro h1{font-size:27px}}

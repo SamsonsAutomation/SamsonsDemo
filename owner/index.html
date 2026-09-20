@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Samson Owner Console | Samson's Automation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../app/styles.css"><link rel="stylesheet" href="../app/clock.css"><link rel="stylesheet" href="../app/admin-app.css"><link rel="stylesheet" href="owner.css">
+</head>
+<body class="clock-page owner-page">
+  <section class="owner-login-shell" id="ownerLoginShell">
+    <header class="public-product-nav"><a class="brand clock-brand" href="../index.html"><div class="brand-mark">S</div><div><strong>Samson's Automation</strong><span>Owner Control Center</span></div></a><div><a href="../index.html">Main site</a><a href="../demo/">Demo</a><a href="../app/admin.html">Client admin</a></div></header>
+    <section class="clock-card auth-card owner-login-card"><span class="kicker">SAMSON ONLY</span><h1>Platform owner sign in</h1><p>Manage companies, privileges, subscriptions, and manual payment destinations without entering a client's workspace.</p><form id="ownerLoginForm" class="clock-form"><label>Username<input name="username" required autocomplete="username"></label><label>Password<input name="password" type="password" required autocomplete="current-password"></label><button class="primary-button" type="submit">Sign in</button><div class="form-message" id="ownerLoginMessage"></div></form><p class="small-note">First time? <a href="setup.html">Create the platform owner account</a>.</p></section>
+  </section>
+
+  <div class="owner-shell hidden" id="ownerApp">
+    <aside class="owner-sidebar"><a class="brand admin-brand" href="../index.html"><div class="brand-mark">S</div><div><strong>Samson's Automation</strong><span>Owner Console</span></div></a><nav class="nav"><button class="nav-link active" data-owner-view="businesses">Businesses</button><button class="nav-link" data-owner-view="settings">Billing Settings</button></nav><div class="sidebar-note"><strong>Platform access</strong><span>This console can grant or revoke module access. Client admins cannot change these privileges themselves.</span></div><button class="ghost-button" id="ownerLogout">Sign out</button></aside>
+    <main class="owner-main"><header class="topbar"><div><p class="eyebrow">PLATFORM CONTROL</p><h1 id="ownerPageTitle">Businesses</h1><p class="top-sub" id="ownerIdentity"></p></div><div class="top-actions"><a class="ghost-button top-link" href="../index.html">Main site</a><a class="ghost-button top-link" href="../demo/">Demo</a></div></header>
+
+      <section class="owner-view active" id="businessesOwnerView"><div class="section-intro"><div><span class="kicker">CLIENT ACCESS</span><h2>Business privileges and subscriptions.</h2><p>Feature switches are enforced by the Worker, not just hidden in the browser.</p></div><div class="owner-search"><input id="businessSearch" placeholder="Search company or code"><button class="primary-button" id="refreshBusinesses">Refresh</button></div></div><div id="businessList" class="owner-business-grid"></div></section>
+
+      <section class="owner-view" id="settingsOwnerView"><div class="section-intro"><div><span class="kicker">PAYMENT SETTINGS</span><h2>Payment destinations.</h2><p>Manual handles can be updated here. Automatic recurring Venmo billing settles to the PayPal business merchant configured in Cloudflare secrets.</p></div></div><section class="panel owner-settings-panel"><form id="platformSettingsForm" class="clock-form compact-form"><label>Cash App cashtag / link<input name="cashappHandle" placeholder="$SamsonsAutomation"></label><label>Venmo handle for manual payments<input name="venmoHandle" placeholder="@SamsonsAutomation"></label><label>PayPal/Venmo merchant display name<input name="paypalMerchantLabel" placeholder="Samson's Automation"></label><button class="primary-button" type="submit">Save billing settings</button><div class="form-message" id="platformSettingsMessage"></div></form><div class="provider-status" id="providerStatus"></div></section></section>
+    </main>
+  </div>
+
+  <div class="modal" id="businessModal" aria-hidden="true"><div class="modal-card owner-business-modal"><div class="modal-head"><div><span class="kicker">BUSINESS CONTROL</span><h2 id="businessModalTitle">Business</h2></div><button class="modal-close" id="closeBusinessModal">×</button></div><div id="businessDetail"></div></div></div>
+
+  <script src="../app/config.js"></script><script src="../app/clock-api.js"></script><script src="owner.js"></script>
+</body></html>

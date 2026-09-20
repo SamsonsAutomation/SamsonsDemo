@@ -21,11 +21,11 @@
       <a class="brand admin-brand" href="../index.html"><div class="brand-mark">S</div><div><strong id="sidebarCompany">Company</strong><span>Samson's Automation</span></div></a>
       <nav class="nav" aria-label="Company admin sections">
         <button class="nav-link active" data-view="overview">Overview</button>
-        <button class="nav-link" data-view="leads">Lead Follow-Up</button>
-        <button class="nav-link" data-view="employees">Employees</button>
-        <button class="nav-link" data-view="time">Time Clock</button>
-        <button class="nav-link" data-view="payroll">Payroll Ready</button>
-        <button class="nav-link" data-view="settings">Settings</button>
+        <button class="nav-link" data-view="leads" data-feature="leads">Lead Follow-Up</button>
+        <button class="nav-link" data-view="employees" data-feature="workforce">Employees</button>
+        <button class="nav-link" data-view="time" data-feature="timekeeping">Time Clock</button>
+        <button class="nav-link" data-view="payroll" data-feature="payroll">Payroll Ready</button>
+        <button class="nav-link" data-view="billing">Plan & Billing</button><button class="nav-link" data-view="settings">Settings</button>
       </nav>
       <div class="sidebar-links"><a href="../index.html">Main site</a><a href="../demo/">Public demo</a><a id="sidebarEmployeeLink" href="employee.html">Employee portal</a></div>
       <div class="sidebar-note"><strong>Tenant protected</strong><span>API queries are scoped server-side to the authenticated company. The browser never chooses a business ID for protected data.</span></div>
@@ -37,11 +37,41 @@
 
       <section class="view" id="leadsView"><div class="section-intro"><div><span class="kicker">LEAD + FOLLOW-UP</span><h2>Keep every inquiry moving.</h2><p>Real company leads are stored under this tenant only. Advance, back up after a misclick, or suspend a cold lead without shifting the action buttons.</p></div><button class="primary-button" id="openLeadForm">+ Add lead</button></div><div class="filter-row" id="leadFilters"><button class="chip active" data-filter="All">All</button><button class="chip" data-filter="New">New</button><button class="chip" data-filter="Contacted">Contacted</button><button class="chip" data-filter="Estimate Sent">Estimate Sent</button><button class="chip" data-filter="Won">Won</button><button class="chip" data-filter="Lost">Lost</button><button class="chip" data-filter="Suspended">Suspended</button></div><div class="panel table-panel"><div class="table-wrap"><table><thead><tr><th>Customer</th><th>Need</th><th>Status</th><th>Next follow-up</th><th>Value</th><th>Actions</th></tr></thead><tbody id="leadTable"></tbody></table></div><div class="table-footer"><button id="loadMoreLeads" class="ghost-button hidden">Load more</button></div></div></section>
 
-      <section class="view" id="employeesView"><div class="section-intro"><div><span class="kicker">EMPLOYEES</span><h2>Credentials, rates, and clock status.</h2><p>PIN hashes are never exposed. A manager can create, edit, disable, restore, or reset an employee account while preserving historical time records.</p></div><button class="primary-button" id="addSecureEmployee">+ Add employee</button></div><div id="employeeAdminList" class="secure-employee-grid"></div></section>
+      <section class="view" id="employeesView">
+        <div class="section-intro"><div><span class="kicker">EMPLOYEES</span><h2>Employees, credentials, and live clock status.</h2><p>Every employee for this company appears here. Managers can clock an employee in or out with one click, then separately edit credentials, rates, account status, or historical punches. Manager punches are audit-logged.</p></div><button class="primary-button" id="addSecureEmployee">+ Add employee</button></div>
+        <div class="panel employee-quick-clock-panel">
+          <div class="panel-header"><div><span class="kicker">QUICK CLOCK</span><h3>All employees</h3><p class="manager-clock-copy">Use the action at the right to clock someone in or out immediately. The action is server-validated against this signed-in company, so an employee from another business cannot be clocked by changing an ID in the browser.</p></div></div>
+          <div class="form-message" id="employeeQuickClockMessage" role="status"></div>
+          <div class="table-wrap"><table class="employee-quick-table"><thead><tr><th>Employee</th><th>Role</th><th>Username</th><th>Status</th><th>Last clock event</th><th>Action</th></tr></thead><tbody id="employeeQuickClockTable"></tbody></table></div>
+        </div>
+        <div class="employee-management-heading"><div><span class="kicker">ACCOUNT MANAGEMENT</span><h3>Employee accounts</h3></div></div>
+        <div id="employeeAdminList" class="secure-employee-grid"></div>
+      </section>
 
       <section class="view" id="timeView"><div class="section-intro"><div><span class="kicker">TIME CLOCK</span><h2>Review real clock events.</h2><p>Managers can clock an employee in or out directly when needed. Manager overrides are audit-logged and do not pretend to be employee GPS punches.</p></div></div><div class="panel manager-clock-panel"><div class="panel-header"><div><span class="kicker">MANAGER CLOCK CONTROL</span><h3>Clock employees in or out</h3><p class="manager-clock-copy">Use this for missed punches, supervised starts, or other manager-approved changes. The button stays in the same position and changes between Clock in and Clock out.</p></div></div><div class="form-message" id="managerClockMessage" role="status"></div><div id="managerClockGrid" class="manager-clock-grid"></div></div><div class="panel range-panel"><div class="range-controls"><label>From<input id="timeFrom" type="date"></label><label>To<input id="timeTo" type="date"></label><button class="primary-button" id="loadTime">Load entries</button></div></div><div class="panel table-panel"><div class="table-wrap"><table><thead><tr><th>Employee</th><th>Clock in</th><th>Clock out</th><th>Hours</th><th>Source / audit</th><th>Action</th></tr></thead><tbody id="timeTable"></tbody></table></div></div></section>
 
       <section class="view" id="payrollView"><div class="section-intro"><div><span class="kicker">PAYROLL-READY</span><h2>Turn approved time into a clean handoff.</h2><p>This is an estimated payroll workflow, not tax filing or direct deposit. Export approved hours to your payroll provider.</p></div><button class="secondary-button" id="exportPayroll">Export CSV</button></div><div class="warning-box"><strong>Important:</strong> Gross wages shown here are estimates from recorded hours and configured hourly rates. Tax withholding, filings, benefits, deductions, and direct deposit stay with the payroll provider.</div><div class="panel range-panel"><div class="range-controls"><label>Pay period start<input id="payrollFrom" type="date"></label><label>Pay period end<input id="payrollTo" type="date"></label><button class="primary-button" id="loadPayroll">Calculate</button></div></div><div class="metric-grid" id="payrollMetrics"></div><div class="panel table-panel"><div class="table-wrap"><table><thead><tr><th>Employee</th><th>Regular</th><th>OT</th><th>Rate</th><th>Gross est.</th></tr></thead><tbody id="payrollTable"></tbody></table></div></div></section>
+
+
+      <section class="view" id="billingView">
+        <div class="section-intro"><div><span class="kicker">PLAN & BILLING</span><h2>Manage your package.</h2><p>Choose the tools your business needs. Upgrades credit what you already paid for the current monthly period toward the new package price.</p></div></div>
+        <div class="warning-box"><strong>Recurring payment note:</strong> Automatic monthly billing is supported through a saved Venmo payment method using PayPal's vault. Cash App is offered only as a manual payment option because Cash App Pay cannot be stored for automatic subscription charges.</div>
+        <div class="metric-grid" id="billingSummary"></div>
+        <div class="package-grid" id="packageGrid"></div>
+        <div class="panel billing-agreement hidden" id="billingAgreement">
+          <div class="panel-header"><div><span class="kicker">SUBSCRIPTION AUTHORIZATION</span><h3 id="agreementTitle">Review package</h3></div></div>
+          <div id="agreementDetails" class="agreement-details"></div>
+          <div class="terms-box" id="termsText"></div>
+          <label class="terms-check"><input type="checkbox" id="termsAgree"><span id="termsCheckboxText">I agree to the terms and authorize the recurring payment described above.</span></label>
+          <div class="billing-methods">
+            <button class="primary-button" id="payVenmoAuto">Authorize automatic Venmo billing</button>
+            <button class="ghost-button" id="payCashAppManual">Pay manually with Cash App</button>
+            <button class="ghost-button" id="payVenmoManual">Pay manually with Venmo</button>
+          </div>
+          <div class="form-message" id="billingMessage" role="status"></div>
+        </div>
+        <div class="panel cancel-panel"><div><span class="kicker">CANCELLATION</span><h3>Automatic renewal</h3><p id="cancelCopy">Your billing status will appear here.</p></div><button class="danger-button" id="cancelSubscription">Cancel renewal</button></div>
+      </section>
 
       <section class="view" id="settingsView"><div class="section-intro"><div><span class="kicker">SETTINGS</span><h2>Company clock and payroll rules.</h2><p>Settings are stored on this company's tenant record only.</p></div></div><div class="admin-grid"><section class="clock-card"><div class="panel-header"><div><span class="kicker">GPS RULE</span><h2>Clock location</h2></div><span id="geoStateBadge" class="status-pill"></span></div><p class="card-copy">Employees must grant GPS access each time they clock. Turn on the boundary if they must also be within the configured radius.</p><form id="geoForm" class="clock-form compact-form"><label class="toggle-row"><input name="enabled" type="checkbox"><span>Require employees to be inside this location boundary</span></label><div class="three-col-form"><label>Latitude<input name="latitude" type="number" step="any"></label><label>Longitude<input name="longitude" type="number" step="any"></label><label>Radius (meters)<input name="radius" type="number" min="25" max="5000" step="5" value="150"></label></div><div class="button-row"><button class="ghost-button" id="useCurrentLocation" type="button">Use my current location</button><button class="primary-button" type="submit">Save GPS rule</button></div><div class="form-message" id="geoMessage"></div></form><div class="privacy-note"><strong>Privacy:</strong> location is recorded only when an employee presses Clock In or Clock Out.</div></section><section class="clock-card"><span class="kicker">PAYROLL RULE</span><h2>Overtime threshold</h2><form id="payrollSettingsForm" class="clock-form"><label>Weekly overtime threshold (hours)<input name="overtimeThreshold" type="number" min="1" max="168" step="0.25" value="40"></label><button class="primary-button">Save payroll rule</button><div class="form-message" id="payrollSettingsMessage"></div></form><hr class="soft-rule"><span class="kicker">EMPLOYEE LINK</span><h2>Mobile clock-in page</h2><div class="copy-field"><input id="portalUrl" readonly><button class="secondary-button" id="copyPortalUrl" type="button">Copy</button></div></section></div></section>
     </main>
