@@ -1,5 +1,5 @@
 const encoder = new TextEncoder();
-const PBKDF2_ITERATIONS = 160000;
+const PBKDF2_ITERATIONS = 100000;
 const MAX_FAILED_LOGINS = 5;
 const LOCK_MINUTES = 10;
 
