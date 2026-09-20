@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Samson's Automation interactive operations demo." />
+  <title>Samson's Automation | Operations Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark">S</div>
+        <div><strong>Samson's Automation</strong><span>Demo Workspace</span></div>
+      </div>
+      <nav class="nav" aria-label="Demo sections">
+        <button class="nav-link active" data-view="overview">Overview</button>
+        <button class="nav-link" data-view="leads">Lead Follow-Up</button>
+        <button class="nav-link" data-view="time">Timekeeping</button>
+        <button class="nav-link" data-view="payroll">Payroll Ready</button>
+        <a class="nav-link nav-anchor" href="admin.html">Secure Staff Clock</a>
+      </nav>
+      <div class="sidebar-note">
+        <strong>Demo only</strong>
+        <span>All data is fake and stored only in this browser.</span>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button id="menuButton" class="menu-button" aria-label="Toggle menu">☰</button>
+        <div>
+          <p class="eyebrow">CENTRAL MAINE SMALL BUSINESS SYSTEM</p>
+          <h1 id="pageTitle">Operations Overview</h1>
+        </div>
+        <button class="ghost-button" id="resetDemo">Reset demo</button>
+      </header>
+
+      <section class="view active" id="overviewView">
+        <div class="hero-card">
+          <div>
+            <span class="pill">LIVE DEMO</span>
+            <h2>One place for leads, crew hours, and payroll-ready totals.</h2>
+            <p>This sample workspace shows how a service business can replace scattered texts, paper timecards, and forgotten follow-ups with one simple workflow.</p>
+          </div>
+          <button class="primary-button" data-jump="leads">Try the lead workflow</button>
+        </div>
+        <div class="metric-grid" id="metrics"></div>
+        <div class="two-col">
+          <div class="panel">
+            <div class="panel-header"><div><span class="kicker">TODAY</span><h3>Follow-ups needing attention</h3></div><button class="text-button" data-jump="leads">View leads</button></div>
+            <div id="followupPreview" class="stack"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-header"><div><span class="kicker">CREW</span><h3>Who's on the clock</h3></div><button class="text-button" data-jump="time">View time</button></div>
+            <div id="clockPreview" class="stack"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="leadsView">
+        <div class="section-intro">
+          <div><span class="kicker">LEAD + FOLLOW-UP</span><h2>Keep every inquiry moving.</h2><p>Add a lead, move it forward or backward through the pipeline, and suspend cold leads so follow-up reminders stay focused on real opportunities.</p></div>
+          <button class="primary-button" id="openLeadForm">+ Add lead</button>
+        </div>
+        <div class="filter-row">
+          <button class="chip active" data-filter="All">All</button>
+          <button class="chip" data-filter="New">New</button>
+          <button class="chip" data-filter="Contacted">Contacted</button>
+          <button class="chip" data-filter="Estimate Sent">Estimate Sent</button>
+          <button class="chip" data-filter="Won">Won</button>
+          <button class="chip" data-filter="Suspended">Suspended</button>
+        </div>
+        <div class="panel table-panel">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Customer</th><th>Need</th><th>Status</th><th>Next follow-up</th><th>Value</th><th>Actions</th></tr></thead>
+              <tbody id="leadTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="timeView">
+        <div class="section-intro">
+          <div><span class="kicker">TIMEKEEPING</span><h2>Clock in without paper timesheets.</h2><p>This is the contractor/manager view. Clock employees in or out for the demo, and use the manager controls to add, edit, or remove employees. A production system can give employees a separate simplified clock screen.</p></div>
+          <div class="section-actions"><a class="secondary-button secure-clock-link" href="admin.html">Secure staff clock</a><button class="primary-button" id="openEmployeeForm">+ Add employee</button></div>
+        </div>
+        <div class="manager-note"><strong>Manager controls</strong><span>Employee setup and pay rates are shown only in this contractor-side demo view.</span></div>
+        <div class="employee-grid" id="employeeCards"></div>
+        <div class="panel table-panel">
+          <div class="panel-header"><div><span class="kicker">THIS PAY PERIOD</span><h3>Recorded hours</h3></div></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Employee</th><th>Role</th><th>Hours</th><th>Rate</th><th>Current status</th></tr></thead>
+              <tbody id="timeTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="payrollView">
+        <div class="section-intro">
+          <div><span class="kicker">PAYROLL-READY</span><h2>Turn approved hours into a clean payroll handoff.</h2><p>This demo calculates regular hours, overtime, and gross wages only. A production setup should hand approved data to a payroll provider such as Gusto, QuickBooks Payroll, or Homebase for taxes, filings, and direct deposit.</p></div>
+          <button class="secondary-button" id="exportPayroll">Export CSV</button>
+        </div>
+        <div class="warning-box"><strong>Important:</strong> Samson's Automation should sell this as payroll workflow/integration, not as a replacement tax-filing payroll processor unless a licensed/compliant payroll provider is doing the statutory payroll work.</div>
+        <div class="metric-grid payroll-metrics" id="payrollMetrics"></div>
+        <div class="panel table-panel">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Employee</th><th>Regular</th><th>OT</th><th>Rate</th><th>Gross</th></tr></thead>
+              <tbody id="payrollTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="leadModal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="leadModalTitle">
+      <div class="modal-header"><div><span class="kicker">DEMO INPUT</span><h2 id="leadModalTitle">Add a new lead</h2></div><button class="icon-button" id="closeLeadForm" aria-label="Close">×</button></div>
+      <form id="leadForm">
+        <div class="form-grid">
+          <label>Customer name<input name="name" required placeholder="Example: Jamie Parker"></label>
+          <label>Phone<input name="phone" placeholder="207-555-0148"></label>
+          <label class="full">What do they need?<input name="need" required placeholder="Heat pump estimate, driveway, weekly cleaning..."></label>
+          <label>Estimated value<input name="value" type="number" min="0" step="50" value="750"></label>
+          <label>Follow up in<select name="followup"><option value="0">Today</option><option value="1" selected>Tomorrow</option><option value="3">3 days</option><option value="7">1 week</option></select></label>
+        </div>
+        <div class="modal-actions"><button type="button" class="ghost-button" id="cancelLeadForm">Cancel</button><button class="primary-button" type="submit">Add lead</button></div>
+      </form>
+    </div>
+  </div>
+
+
+  <div class="modal-backdrop" id="employeeModal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="employeeModalTitle">
+      <div class="modal-header"><div><span class="kicker">MANAGER CONTROL</span><h2 id="employeeModalTitle">Add employee</h2></div><button class="icon-button" id="closeEmployeeForm" aria-label="Close">×</button></div>
+      <form id="employeeForm">
+        <input type="hidden" name="employeeId" value="">
+        <div class="form-grid">
+          <label>Employee name<input name="employeeName" required placeholder="Example: Alex Morgan"></label>
+          <label>Role<input name="employeeRole" required placeholder="Field Technician"></label>
+          <label>Hourly rate<input name="employeeRate" type="number" min="0" step="0.01" required value="25"></label>
+          <label>Current pay-period hours<input name="employeeHours" type="number" min="0" step="0.01" required value="0"></label>
+        </div>
+        <div class="modal-actions"><button type="button" class="ghost-button" id="cancelEmployeeForm">Cancel</button><button class="primary-button" id="saveEmployeeButton" type="submit">Add employee</button></div>
+      </form>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

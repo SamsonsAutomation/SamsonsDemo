@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Samson's Automation secure employee time clock manager console." />
+  <title>Samson's Automation | Staff Clock Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="clock.css" />
+</head>
+<body class="clock-page">
+  <main class="clock-shell">
+    <header class="clock-header">
+      <a class="brand clock-brand" href="index.html">
+        <div class="brand-mark">S</div>
+        <div><strong>Samson's Automation</strong><span>Secure Staff Clock</span></div>
+      </a>
+      <div class="clock-header-actions">
+        <a class="ghost-button" id="employeePortalLink" href="employee.html">Employee portal</a>
+        <button class="ghost-button hidden" id="adminLogout" type="button">Sign out</button>
+      </div>
+    </header>
+
+    <section class="clock-card setup-warning" id="notConfigured">
+      <span class="kicker">SETUP REQUIRED</span>
+      <h1>Connect the secure backend first.</h1>
+      <p>This manager console intentionally does not store employee credentials in GitHub Pages. Deploy the included Cloudflare Worker, then place its URL in <code>config.js</code>.</p>
+      <a class="primary-button inline-button" href="README.md">Open setup guide</a>
+    </section>
+
+    <section class="clock-card auth-card" id="adminLoginCard">
+      <span class="kicker">BOSS / ADMIN ACCESS</span>
+      <h1>Manager sign in</h1>
+      <p>Employee credentials, geofence settings, and time-clock administration are restricted to an authenticated manager account.</p>
+      <form id="adminLoginForm" class="clock-form">
+        <label>Company code<input name="company" required autocomplete="organization" placeholder="samsons-demo"></label>
+        <label>Admin username<input name="username" required autocomplete="username" placeholder="samson"></label>
+        <label>Password<input name="password" type="password" required autocomplete="current-password"></label>
+        <button class="primary-button" type="submit">Sign in</button>
+        <div class="form-message" id="adminLoginMessage" role="status"></div>
+      </form>
+      <p class="small-note">First setup? Use <a href="setup.html">the one-time setup page</a> after deploying the backend.</p>
+    </section>
+
+    <section id="adminApp" class="hidden">
+      <div class="admin-hero">
+        <div><span class="kicker">MANAGER CONSOLE</span><h1 id="adminCompanyName">Staff Clock</h1><p>Manage employees, clock credentials, and the allowed clock-in/out location.</p></div>
+        <div class="admin-hero-meta"><span id="adminIdentity"></span><span id="backendStatus" class="status-pill">Connected</span></div>
+      </div>
+
+      <div class="admin-grid">
+        <section class="clock-card">
+          <div class="panel-header"><div><span class="kicker">GPS RULE</span><h2>Clock location</h2></div><span id="geoStateBadge" class="status-pill"></span></div>
+          <p class="card-copy">Employees must grant GPS access every time they clock in or out. If the boundary is enabled, their current location must also fall within the radius below.</p>
+          <form id="geoForm" class="clock-form compact-form">
+            <label class="toggle-row"><input name="enabled" type="checkbox"><span>Require employees to be inside this location boundary</span></label>
+            <div class="three-col-form">
+              <label>Latitude<input name="latitude" type="number" step="any" placeholder="44.5520"></label>
+              <label>Longitude<input name="longitude" type="number" step="any" placeholder="-69.6317"></label>
+              <label>Radius (meters)<input name="radius" type="number" min="25" max="5000" step="5" value="150"></label>
+            </div>
+            <div class="button-row">
+              <button class="ghost-button" id="useCurrentLocation" type="button">Use my current location</button>
+              <button class="primary-button" type="submit">Save GPS rule</button>
+            </div>
+            <div class="form-message" id="geoMessage" role="status"></div>
+          </form>
+          <div class="privacy-note"><strong>Privacy:</strong> this build records GPS only when an employee presses Clock In or Clock Out. It does not continuously track employees.</div>
+        </section>
+
+        <section class="clock-card">
+          <div class="panel-header"><div><span class="kicker">EMPLOYEE LINK</span><h2>Mobile clock-in page</h2></div></div>
+          <p class="card-copy">Send this link to employees. The company code is included in the URL, so employees only enter their username and 5-digit PIN.</p>
+          <div class="copy-field"><input id="portalUrl" readonly><button class="secondary-button" id="copyPortalUrl" type="button">Copy</button></div>
+          <p class="small-note">The employee page is responsive and works from a phone over HTTPS. Browser GPS permission is required to clock.</p>
+        </section>
+      </div>
+
+      <section class="clock-card employee-admin-section">
+        <div class="section-intro admin-section-intro">
+          <div><span class="kicker">EMPLOYEES</span><h2>Credentials and clock status</h2><p>Usernames can be edited. PINs are never stored in plaintext and cannot be retrieved later; the boss can set or reset a PIN instead.</p></div>
+          <button class="primary-button" id="addSecureEmployee" type="button">+ Add employee</button>
+        </div>
+        <div id="employeeAdminList" class="secure-employee-grid"></div>
+      </section>
+    </section>
+  </main>
+
+  <div class="modal-backdrop" id="secureEmployeeModal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="secureEmployeeTitle">
+      <div class="modal-header"><div><span class="kicker">MANAGER CONTROL</span><h2 id="secureEmployeeTitle">Add employee</h2></div><button class="icon-button" id="closeSecureEmployee" aria-label="Close">×</button></div>
+      <form id="secureEmployeeForm">
+        <input name="employeeId" type="hidden">
+        <div class="form-grid">
+          <label>Employee name<input name="displayName" required placeholder="Chris Walker"></label>
+          <label>Role / job title<input name="jobTitle" placeholder="Field Technician"></label>
+          <label class="full edit-only hidden" id="usernameEditField">Username<input name="username" autocomplete="off"></label>
+          <label class="full edit-only hidden" id="pinEditField">Set a new 5-digit PIN (optional)<input name="newPin" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" autocomplete="new-password" placeholder="Leave blank to keep current PIN"></label>
+        </div>
+        <p class="small-note add-only" id="generatedCredentialNote">A shortened username and random 5-digit PIN will be generated automatically. The PIN is shown only once after creation.</p>
+        <div class="modal-actions"><button type="button" class="ghost-button" id="cancelSecureEmployee">Cancel</button><button class="primary-button" type="submit" id="saveSecureEmployee">Add employee</button></div>
+        <div class="form-message" id="employeeFormMessage" role="status"></div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="credentialModal" aria-hidden="true">
+    <div class="modal credential-modal" role="dialog" aria-modal="true" aria-labelledby="credentialTitle">
+      <div class="modal-header"><div><span class="kicker">SHOW ONCE</span><h2 id="credentialTitle">Employee credentials</h2></div><button class="icon-button" id="closeCredentialModal" aria-label="Close">×</button></div>
+      <p>Give these to the employee securely. The PIN cannot be viewed again after this window closes; it can only be reset.</p>
+      <div class="credential-box"><span>Username</span><strong id="credentialUsername"></strong></div>
+      <div class="credential-box"><span>5-digit PIN</span><strong id="credentialPin"></strong></div>
+      <div class="button-row"><button class="secondary-button" id="copyCredentials" type="button">Copy credentials</button><button class="primary-button" id="doneCredentials" type="button">Done</button></div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="clock-api.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
